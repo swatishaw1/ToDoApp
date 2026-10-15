@@ -1,0 +1,65 @@
+version: '3.8'
+services:
+  taskmanager:
+    build: ./TaskManager
+    container_name: taskmanager
+    ports:
+      - "8080:8080"
+    networks:
+      - taskmanager-nw
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql_db:3306/taskmanager?allowPublicKeyRetrieval=true&useSSL=false
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+    depends_on:
+      - mysql
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    
+  mysql:
+    image: mysql:latest
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: taskmanager
+    ports:
+      - "3306:3306"
+    networks:
+      - taskmanager-nw
+    volumes:
+      - mysql_data:/var/lib/mysql
+    restart: always
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  taskmanager-frontend:
+    build: ./task-manager-frontend
+    container_name: taskmanager-frontend
+    ports:
+      - "5173:80"
+    networks:
+      - taskmanager-nw
+    depends_on:
+      - taskmanager
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5173 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+
+networks:
+  taskmanager-nw:
+volumes:
+  mysql_data:
