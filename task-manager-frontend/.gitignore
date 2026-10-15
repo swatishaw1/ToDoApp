@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# React build output
+build/
+dist/
+.vite/
+
+# Test coverage
+coverage/

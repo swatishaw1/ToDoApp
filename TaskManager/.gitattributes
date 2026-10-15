@@ -1,2 +1,17 @@
 /mvnw text eol=lf
 *.cmd text eol=crlf
+
+
+*.class
+*.jar
+*.war
+*.ear
+target/
+.mvn/wrapper/maven-wrapper.jar
+
+# Logs
+*.log
+logs/
+
+# Spring Boot generated files
+spring.log
